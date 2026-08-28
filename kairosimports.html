@@ -1,0 +1,991 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kairos Import Catalogo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Jost:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black: #0b0b0d;
+    --black-soft: #141417;
+    --gold: #c9a24b;
+    --gold-soft: #e2c785;
+    --oud: #3b1420;
+    --ivory: #f3ecdd;
+    --grey: #8c8168;
+    --line: rgba(201,162,75,0.22);
+  }
+
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background: var(--black);
+    color: var(--ivory);
+    font-family:'Jost', sans-serif;
+    font-weight:300;
+    line-height:1.6;
+    overflow-x:hidden;
+  }
+
+  h1,h2,h3,.serif{ font-family:'Cormorant Garamond', serif; font-weight:500; }
+  .eyebrow{
+    font-family:'Cinzel', serif;
+    letter-spacing:0.28em;
+    text-transform:uppercase;
+    font-size:0.68rem;
+    color: var(--gold);
+  }
+
+  a{color:inherit; text-decoration:none;}
+  button{font-family:inherit; cursor:pointer; border:none; background:none; color:inherit;}
+  ::selection{background:var(--gold); color:var(--black);}
+
+  /* NAV */
+  .nav{
+    position:sticky; top:0; z-index:40;
+    display:flex; align-items:center; justify-content:space-between;
+    padding: 1.1rem 5vw;
+    background: rgba(11,11,13,0.86);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--line);
+  }
+  .brand{ font-family:'Cinzel', serif; letter-spacing:0.14em; font-size:1.05rem; }
+  .brand span{ color:var(--gold); }
+  .nav-actions { display: flex; gap: 0.8rem; align-items: center; }
+  .admin-btn{
+    border:1px solid var(--line);
+    padding:0.55rem 1rem;
+    border-radius:999px;
+    font-size:0.78rem;
+    letter-spacing:0.06em;
+    font-family:'Cinzel', serif;
+    display:flex; align-items:center; gap:0.4rem;
+    transition:border-color .2s, background .2s, color .2s;
+  }
+  .admin-btn:hover{ border-color:var(--gold); background:rgba(201,162,75,0.08); color:var(--gold); }
+  
+  .cart-btn{
+    position:relative;
+    border:1px solid var(--line);
+    padding:0.55rem 1rem;
+    border-radius:999px;
+    font-size:0.78rem;
+    letter-spacing:0.06em;
+    display:flex; align-items:center; gap:0.5rem;
+    transition:border-color .2s, background .2s;
+  }
+  .cart-btn:hover{ border-color:var(--gold); background:rgba(201,162,75,0.08); }
+  .cart-count{
+    background:var(--gold); color:var(--black);
+    font-family:'Jost'; font-weight:600; font-size:0.7rem;
+    width:1.15rem; height:1.15rem; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+  }
+
+  /* HERO */
+  .hero{
+    position:relative;
+    min-height:78vh;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center;
+    padding: 6rem 6vw 4rem;
+    background:
+      radial-gradient(ellipse 60% 50% at 50% 0%, rgba(201,162,75,0.12), transparent 70%),
+      linear-gradient(180deg, var(--black) 0%, var(--black-soft) 100%);
+  }
+  .hero .eyebrow{ margin-bottom:1.4rem; }
+  .hero h1{
+    font-size: clamp(2.4rem, 6vw, 4.4rem);
+    max-width:16ch;
+    letter-spacing:0.01em;
+  }
+  .hero h1 em{ font-style:italic; color:var(--gold); }
+  .hero p{
+    max-width:46ch;
+    margin: 1.6rem 0 2.4rem;
+    color: rgba(243,236,221,0.72);
+    font-size:1.02rem;
+  }
+  .drop{
+    width:1px; height:70px;
+    background:linear-gradient(var(--gold), transparent);
+    margin: 0 auto 1.6rem;
+    position:relative;
+  }
+  .drop::after{
+    content:''; position:absolute; left:50%; bottom:0; transform:translateX(-50%);
+    width:7px; height:7px; border-radius:50% 50% 50% 0; rotate:45deg;
+    background:var(--gold); box-shadow:0 0 12px 2px rgba(201,162,75,0.5);
+  }
+  .btn-gold{
+    background: linear-gradient(135deg, var(--gold-soft), var(--gold));
+    color: var(--black);
+    padding: 0.95rem 2.2rem;
+    border-radius: 999px;
+    font-family:'Cinzel'; font-size:0.75rem; letter-spacing:0.16em;
+    text-transform:uppercase;
+    display:inline-block;
+    transition: transform .25s, box-shadow .25s;
+  }
+  .btn-gold:hover{ transform: translateY(-2px); box-shadow:0 10px 30px -8px rgba(201,162,75,0.55); }
+
+  /* SECTION SHELL */
+  section{ padding: 5rem 6vw; max-width:1180px; margin:0 auto; }
+  .section-head{ text-align:center; margin-bottom:3rem; }
+  .section-head h2{ font-size:clamp(1.8rem,4vw,2.6rem); margin-top:0.6rem; }
+  .section-head p{ color:rgba(243,236,221,0.6); max-width:52ch; margin:0.9rem auto 0; font-size:0.95rem; }
+
+  /* FAQ */
+  .faq{ border-top:1px solid var(--line); }
+  .faq-item{ border-bottom:1px solid var(--line); }
+  .faq-q{
+    width:100%; display:flex; align-items:center; justify-content:space-between;
+    padding:1.4rem 0.2rem;
+    font-family:'Cormorant Garamond'; font-size:1.15rem; font-weight:500;
+    text-align:left;
+  }
+  .faq-q .num{ color:var(--gold); font-family:'Jost'; font-size:0.8rem; margin-right:0.9rem; }
+  .faq-icon{ font-size:1.3rem; color:var(--gold); transition:transform .3s; flex-shrink:0; margin-left:1rem;}
+  .faq-item.open .faq-icon{ transform:rotate(45deg); }
+  .faq-a{
+    max-height:0; overflow:hidden; transition:max-height .35s ease, padding .35s ease;
+    font-size:0.92rem; color:rgba(243,236,221,0.7);
+  }
+  .faq-item.open .faq-a{ max-height:240px; padding-bottom:1.5rem; }
+  .faq-a b{ color:var(--ivory); font-weight:500; }
+
+  /* CATALOG & CARDS (MELI STYLE PORTADA) */
+  .filters{
+    display:flex; gap:0.6rem; justify-content:center; flex-wrap:wrap; margin-bottom:2.6rem;
+  }
+  .filter-btn{
+    border:1px solid var(--line); padding:0.5rem 1.1rem; border-radius:999px;
+    font-size:0.72rem; letter-spacing:0.08em; text-transform:uppercase; font-family:'Cinzel';
+    color: rgba(243,236,221,0.65);
+    transition: all .2s;
+  }
+  .filter-btn.active, .filter-btn:hover{ border-color:var(--gold); color:var(--gold); background:rgba(201,162,75,0.08); }
+
+  .grid{
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(260px,1fr)); gap:1.8rem;
+  }
+  .card{
+    border:1px solid var(--line);
+    border-radius:4px;
+    background: linear-gradient(180deg, rgba(20,20,23,0.95), rgba(11,11,13,0.98));
+    padding:1.4rem;
+    display:flex; flex-direction:column;
+    transition: border-color .25s, transform .25s, box-shadow .25s;
+    position: relative;
+    overflow: hidden;
+  }
+  .card:hover{ border-color:var(--gold); transform:translateY(-4px); box-shadow:0 12px 30px -10px rgba(201,162,75,0.25); }
+
+  /* BADGES CONTAINER */
+  .badges-container {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-items: flex-start;
+    margin-bottom: 0.8rem;
+    min-height: 22px;
+  }
+  .badge-meli {
+    background: #ff7700;
+    color: #ffffff;
+    font-family: 'Jost', sans-serif;
+    font-weight: 600;
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    padding: 0.2rem 0.55rem;
+    border-radius: 2px;
+    text-transform: uppercase;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  }
+  .badge-last {
+    background: var(--oud);
+    border: 1px solid var(--gold);
+    color: var(--gold-soft);
+    font-family: 'Jost', sans-serif;
+    font-weight: 600;
+    font-size: 0.65rem;
+    letter-spacing: 0.08em;
+    padding: 0.2rem 0.55rem;
+    border-radius: 2px;
+    text-transform: uppercase;
+  }
+
+  /* PORTADA / IMAGE STYLING (BIGGER & CENTERED) */
+  .bottle-wrap{
+    display:flex; justify-content:center; align-items:center;
+    margin: 0.4rem 0 1.2rem;
+    height: 220px;
+    background: rgba(255,255,255,0.015);
+    border-radius: 2px;
+    padding: 10px;
+    position: relative;
+  }
+  .bottle{
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 16px rgba(0,0,0,0.6));
+    transition: transform .3s;
+  }
+  .card:hover .bottle { transform: scale(1.04); }
+
+  .card-cat-tag{
+    font-family:'Cinzel'; font-size:0.6rem; letter-spacing:0.12em; text-transform:uppercase;
+    color:var(--gold); opacity: 0.8; margin-bottom: 0.2rem;
+  }
+  .card h3{ font-size:1.25rem; line-height: 1.35; margin-bottom:0.2rem; font-weight: 500; }
+  .card .notes{ font-size:0.78rem; color:rgba(243,236,221,0.55); margin-bottom: 0.8rem; letter-spacing:0.02em;}
+  .card .price-row{ display:flex; align-items:baseline; gap:0.4rem; margin-top: auto; margin-bottom:0.3rem;}
+  .card .price{ font-family:'Cormorant Garamond'; font-size:1.8rem; color:var(--gold); font-weight: 600; }
+  .card .size{ font-size:0.75rem; color:rgba(243,236,221,0.5); }
+  
+  .stock-line{ font-size:0.7rem; color:rgba(243,236,221,0.5); margin-bottom:0.6rem; }
+  .stock-bar{ height:2px; background:rgba(201,162,75,0.18); border-radius:2px; margin-bottom:1rem; overflow:hidden; }
+  .stock-fill{ height:100%; background:var(--gold); }
+  
+  .add-btn{
+    width: 100%;
+    border:1px solid var(--gold); color:var(--gold);
+    padding:0.75rem; border-radius:2px;
+    font-family:'Cinzel'; font-size:0.68rem; letter-spacing:0.12em; text-transform:uppercase;
+    transition: background .2s, color .2s;
+  }
+  .add-btn:hover{ background:var(--gold); color:var(--black); }
+  .add-btn.added{ background:var(--gold); color:var(--black); }
+
+  /* FOOTER */
+  footer{
+    border-top:1px solid var(--line);
+    padding: 3rem 6vw 2.4rem;
+    text-align:center;
+    color:rgba(243,236,221,0.45);
+    font-size:0.78rem;
+  }
+  footer .brand{ display:block; margin-bottom:0.6rem; }
+
+  /* CART DRAWER */
+  .overlay{
+    position:fixed; inset:0; background:rgba(0,0,0,0.55);
+    opacity:0; pointer-events:none; transition:opacity .3s; z-index:50;
+  }
+  .overlay.show{ opacity:1; pointer-events:auto; }
+
+  .drawer{
+    position:fixed; top:0; right:0; height:100%; width:min(420px, 92vw);
+    background:var(--black-soft);
+    border-left:1px solid var(--line);
+    z-index:51;
+    transform:translateX(100%);
+    transition:transform .35s cubic-bezier(.2,.8,.2,1);
+    display:flex; flex-direction:column;
+  }
+  .drawer.show{ transform:translateX(0); }
+  .drawer-head{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:1.4rem 1.4rem; border-bottom:1px solid var(--line);
+  }
+  .drawer-head h3{ font-size:1.3rem; }
+  .close-btn{ font-size:1.4rem; color:var(--gold); }
+
+  .drawer-body{ flex:1; overflow-y:auto; padding:1.2rem 1.4rem; }
+  .empty-cart{ text-align:center; color:rgba(243,236,221,0.5); margin-top:3rem; font-size:0.9rem; }
+
+  .cart-item{
+    display:flex; gap:0.9rem; padding:1rem 0; border-bottom:1px solid var(--line); align-items: center;
+  }
+  .cart-item .bottle-thumb{ width:36px; height:46px; flex-shrink:0; object-fit: contain; }
+  .cart-item-info{ flex:1; }
+  .cart-item-info h4{ font-family:'Cormorant Garamond'; font-size:1.05rem; font-weight:500; }
+  .cart-item-info .unit-price{ font-size:0.72rem; color:rgba(243,236,221,0.5); }
+  .qty-row{ display:flex; align-items:center; gap:0.7rem; margin-top:0.5rem; }
+  .qty-btn{
+    width:22px; height:22px; border:1px solid var(--line); border-radius:50%;
+    display:flex; align-items:center; justify-content:center; font-size:0.85rem; color:var(--gold);
+  }
+  .qty-btn:hover{ border-color:var(--gold); }
+  .remove-btn{ font-size:0.68rem; color:rgba(243,236,221,0.4); letter-spacing:0.04em; margin-top:0.4rem; text-decoration:underline; }
+  .remove-btn:hover{ color:var(--gold); }
+  .line-total{ font-family:'Cormorant Garamond'; font-size:1.05rem; color:var(--gold); white-space:nowrap; }
+
+  .drawer-foot{ border-top:1px solid var(--line); padding:1.3rem 1.4rem 1.6rem; }
+  .totals-row{ display:flex; justify-content:space-between; font-size:0.85rem; margin-bottom:0.5rem; color:rgba(243,236,221,0.7); }
+  .totals-row.main{ font-size:1.05rem; color:var(--ivory); font-family:'Cormorant Garamond'; margin-top:0.7rem; padding-top:0.7rem; border-top:1px dashed var(--line);}
+  .totals-row b{ color:var(--gold); }
+  .wpp-btn{
+    width:100%; margin-top:1.1rem;
+    background: linear-gradient(135deg, var(--gold-soft), var(--gold));
+    color:var(--black); padding:1rem; border-radius:2px;
+    font-family:'Cinzel'; font-size:0.75rem; letter-spacing:0.14em; text-transform:uppercase;
+    display:flex; align-items:center; justify-content:center; gap:0.6rem;
+    transition:transform .2s;
+  }
+  .wpp-btn:hover{ transform:translateY(-2px); }
+  .wpp-btn:disabled{ opacity:0.35; pointer-events:none; }
+  .fine-print{ font-size:0.66rem; color:rgba(243,236,221,0.4); margin-top:0.8rem; text-align:center; line-height:1.5;}
+
+  /* MODAL ADMIN */
+  .modal {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 100; opacity: 0; pointer-events: none; transition: opacity .3s;
+  }
+  .modal.show { opacity: 1; pointer-events: auto; }
+  .modal-content {
+    background: var(--black-soft); border: 1px solid var(--gold);
+    width: min(580px, 94vw); max-height: 90vh; overflow-y: auto;
+    border-radius: 4px; padding: 2rem; position: relative;
+  }
+  .modal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+  .modal-head h3 { font-size: 1.5rem; color: var(--gold); font-family: 'Cinzel', serif; }
+  
+  .form-group { margin-bottom: 1rem; }
+  .form-group label { display: block; font-size: 0.75rem; font-family: 'Cinzel', serif; color: var(--gold); margin-bottom: 0.3rem; letter-spacing: 0.08em; }
+  .form-control {
+    width: 100%; background: var(--black); border: 1px solid var(--line);
+    color: var(--ivory); padding: 0.7rem; border-radius: 2px; font-family: inherit; font-size: 0.9rem;
+  }
+  .form-control:focus { outline: none; border-color: var(--gold); }
+  
+  .admin-actions-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+  .admin-product-item {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.8rem 0; border-bottom: 1px solid var(--line); font-size: 0.9rem;
+  }
+  .admin-product-actions { display: flex; gap: 0.5rem; }
+  .btn-sm { padding: 0.3rem 0.6rem; font-size: 0.65rem; border-radius: 2px; font-family: 'Cinzel'; }
+  .btn-edit { border: 1px solid var(--gold); color: var(--gold); }
+  .btn-edit:hover { background: var(--gold); color: var(--black); }
+  .btn-del { border: 1px solid #c94b4b; color: #c94b4b; }
+  .btn-del:hover { background: #c94b4b; color: var(--ivory); }
+
+  @media (max-width:560px){
+    section{ padding:3.6rem 6vw; }
+    .hero{ padding-top:5rem; }
+  }
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="brand">KAIROS <span>IMPORT</span></div>
+  <div class="nav-actions">
+    <button class="admin-btn" onclick="openAdminModal()">
+      <span>⚙️ Admin</span>
+    </button>
+    <button class="cart-btn" onclick="openCart()">
+      <span>Carrito</span>
+      <span class="cart-count" id="cartCount">0</span>
+    </button>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="eyebrow"> </div>
+  <h1><span style="color: #c9a24b;">Preventa limitada</span><br><em></em></h1>
+  <p>Reservá ahora tu perfume árabe o inspirado en diseñador a precio de preventa. Con una seña asegurás tu unidad.</p>
+  <div class="drop"></div>
+  <a href="#catalogo" class="btn-gold">Ver catálogo</a>
+</header>
+
+<section id="info">
+  <div class="section-head">
+    <div class="eyebrow">Antes de reservar</div>
+    <h2>Todo lo que necesitás saber</h2>
+    <p>Leé esto antes de armar tu pedido: así reservás con total tranquilidad.</p>
+  </div>
+  <div class="faq" id="faqList">
+    <!-- FAQs dinámicas -->
+  </div>
+</section>
+
+<section id="catalogo">
+  <div class="section-head">
+    <div class="eyebrow">Catálogo</div>
+    <h2>Preventa disponible</h2>
+    <p>Frascos de gran calidad y alta concentración. Portada exclusiva de preventa.</p>
+  </div>
+  <div class="filters" id="filters">
+    <!-- Filtros dinámicos -->
+  </div>
+  <div class="grid" id="grid">
+    <!-- Productos dinámicos -->
+  </div>
+</section>
+
+<footer>
+  <span class="brand">KAIROS <span>IMPORT</span></span>
+  Urdinarrain, Entre Ríos · Envíos a Gualeguaychú y zona · Preventa con seña
+</footer>
+
+<!-- CART DRAWER -->
+<div class="overlay" id="overlay" onclick="closeCart()"></div>
+<aside class="drawer" id="drawer">
+  <div class="drawer-head">
+    <h3>Tu reserva</h3>
+    <button class="close-btn" onclick="closeCart()">×</button>
+  </div>
+  <div class="drawer-body" id="drawerBody">
+    <div class="empty-cart">Todavía no agregaste ningún perfume a tu reserva.</div>
+  </div>
+  <div class="drawer-foot" id="drawerFoot"></div>
+</aside>
+
+<!-- ADMIN MODAL -->
+<div class="modal" id="adminModal" onclick="checkOutsideModal(event)">
+  <div class="modal-content" id="modalContent">
+    <div class="modal-head">
+      <h3 id="adminModalTitle">Panel de Administración</h3>
+      <button class="close-btn" onclick="closeAdminModal()">×</button>
+    </div>
+    <div id="adminPanelBody">
+      <!-- Se inyecta dinámicamente -->
+    </div>
+  </div>
+</div>
+
+<script>
+const DEFAULT_CONFIG = {
+  whatsappNumber: "5493446659180",
+  depositPercent: 50,
+  adminPin: "93921985",
+  faq: [
+    {
+      q: "¿Cómo funciona la preventa?",
+      a: "<b>Elegís tus perfumes, pagás una seña del %DEPOSIT%% y reservás tu lugar</b> en el próximo pedido. El saldo restante se abona cuando el producto llega y coordinamos la entrega o el envío. Los precios de preventa son más bajos que una vez que el stock ya está disponible."
+    },
+    {
+      q: "¿Cuánto es la seña y cómo la pago?",
+      a: "La seña es del <b>%DEPOSIT%% del valor de cada producto</b> y se paga por transferencia o efectivo al confirmar el pedido por WhatsApp. Es lo que asegura tu unidad."
+    },
+    {
+      q: "¿Qué métodos de pago aceptás?",
+      a: "<b>Transferencia bancaria, Mercado Pago y efectivo</b> (retirando en Urdinarrain). El saldo final se puede coordinar por el mismo medio que la seña."
+    },
+    {
+      q: "¿En cuánto tiempo llega y cómo se entrega?",
+      a: "El tiempo estimado de preventa es de <b>2 a 3 días hábiles</b> desde la finalización de tu pedido. Se entrega en mano en Urdinarrain o se coordina envío a otras localidades con costo adicional a cargo del comprador."
+    }
+  ],
+  categories: ["Todos", "Línea Árabe", "Línea Inspirada"],
+  products: [
+    { id:"p1", name:"Ámbar Real", cat:"Línea Árabe", notes:"Ámbar · Oud · Vainilla", price:8500, size:"5g", stock:12, max:20, image:"", bestSeller: true, lastUnits: false },
+    { id:"p2", name:"Oud Noir", cat:"Línea Árabe", notes:"Oud · Cuero · Especias", price:9200, size:"5g", stock:2, max:20, image:"", bestSeller: false, lastUnits: true },
+    { id:"p3", name:"Rosa de Taif", cat:"Línea Árabe", notes:"Rosa · Azafrán · Almizcle", price:8900, size:"5g", stock:15, max:20, image:"", bestSeller: true, lastUnits: true },
+    { id:"p4", name:"Musk Al Sultan", cat:"Línea Árabe", notes:"Almizcle blanco · Ámbar", price:7900, size:"5g", stock:18, max:20, image:"", bestSeller: false, lastUnits: false },
+    { id:"p5", name:"N.º 5 Elegance", cat:"Línea Inspirada", notes:"Floral aldehído clásico", price:6800, size:"5ml", stock:9, max:15, image:"", bestSeller: true, lastUnits: false },
+    { id:"p6", name:"Bleu Signature", cat:"Línea Inspirada", notes:"Cítrico · Amaderado", price:7200, size:"5ml", stock:2, max:15, image:"", bestSeller: false, lastUnits: true }
+  ]
+};
+
+let CONFIG = JSON.parse(localStorage.getItem("kairos_config")) || DEFAULT_CONFIG;
+if(!CONFIG.adminPin) CONFIG.adminPin = "93921985";
+
+function saveConfig() {
+  localStorage.setItem("kairos_config", JSON.stringify(CONFIG));
+}
+
+const money = n => "$" + Number(n).toLocaleString("es-AR");
+let cart = {}; 
+let activeFilter = "Todos";
+let isAdminLoggedIn = false;
+
+function renderProductVisual(p){
+  if(p.image && p.image.trim() !== "") {
+    return `<img src="${p.image}" class="bottle" alt="${p.name}" onerror="this.onerror=null; this.src='https://placehold.co/240x280/141417/c9a24b?text=Perfume';">`;
+  }
+  const tint = p.cat==="Línea Árabe" ? "#c9a24b" : "#e2c785";
+  return `<svg class="bottle" viewBox="0 0 120 160" xmlns="http://www.w3.org/2000/svg" style="height: 180px;">
+    <rect x="48" y="10" width="24" height="20" rx="3" fill="${tint}" opacity="0.9"/>
+    <rect x="54" y="2" width="12" height="10" rx="2" fill="${tint}"/>
+    <path d="M30 40 Q30 30 48 30 H72 Q90 30 90 40 V130 Q90 150 60 150 Q30 150 30 130 Z" fill="none" stroke="${tint}" stroke-width="2.2"/>
+    <path d="M32 55 Q32 48 48 48 H72 Q88 48 88 55 V130 Q88 147 60 147 Q32 147 32 130 Z" fill="${tint}" opacity="0.15"/>
+    <line x1="42" y1="85" x2="78" y2="85" stroke="${tint}" stroke-width="1" opacity="0.6"/>
+  </svg>`;
+}
+
+function renderFaq(){
+  const wrap = document.getElementById("faqList");
+  wrap.innerHTML = CONFIG.faq.map((item, i) => `
+    <div class="faq-item" data-i="${i}">
+      <button class="faq-q" onclick="toggleFaq(${i})">
+        <span><span class="num">0${i+1}</span>${item.q}</span>
+        <span class="faq-icon">+</span>
+      </button>
+      <div class="faq-a">${item.a.replaceAll("%DEPOSIT%", CONFIG.depositPercent)}</div>
+    </div>
+  `).join("");
+}
+function toggleFaq(i){
+  document.querySelectorAll(".faq-item").forEach(el=>{
+    if(Number(el.dataset.i) === i){ el.classList.toggle("open"); }
+    else { el.classList.remove("open"); }
+  });
+}
+
+function renderFilters(){
+  const wrap = document.getElementById("filters");
+  wrap.innerHTML = CONFIG.categories.map(c => `
+    <button class="filter-btn ${c===activeFilter?'active':''}" onclick="setFilter('${c}')">${c}</button>
+  `).join("");
+}
+function setFilter(c){ activeFilter = c; renderFilters(); renderGrid(); }
+
+function renderGrid(){
+  const wrap = document.getElementById("grid");
+  const list = CONFIG.products.filter(p => activeFilter==="Todos" || p.cat===activeFilter);
+  
+  if(list.length === 0) {
+    wrap.innerHTML = `<div style="grid-column: 1/-1; text-align:center; color:rgba(243,236,221,0.5); padding: 3rem 0;">No hay perfumes disponibles en esta categoría actualmente.</div>`;
+    return;
+  }
+
+  wrap.innerHTML = list.map(p => {
+    const pct = Math.max(6, Math.round((p.stock/p.max)*100));
+    const inCart = !!cart[p.id];
+    
+    // Generación dinámica de carteles compatibles entre sí
+    let badgesHtml = '';
+    if(p.bestSeller) {
+      badgesHtml += `<div class="badge-meli">MÁS VENDIDO</div>`;
+    }
+    if(p.lastUnits) {
+      badgesHtml += `<div class="badge-last">⚡ ÚLTIMAS UNIDADES</div>`;
+    }
+
+    return `
+    <div class="card">
+      <div class="badges-container">${badgesHtml}</div>
+      <div class="card-cat-tag">${p.cat}</div>
+      <div class="bottle-wrap">${renderProductVisual(p)}</div>
+      <h3>${p.name}</h3>
+      <div class="notes">${p.notes}</div>
+      <div class="price-row"><span class="price">${money(p.price)}</span><span class="size">/ ${p.size}</span></div>
+      <div class="stock-line">${p.stock} de ${p.max} cupos disponibles</div>
+      <div class="stock-bar"><div class="stock-fill" style="width:${pct}%"></div></div>
+      <button class="add-btn ${inCart?'added':''}" onclick="addToCart('${p.id}')">
+        ${inCart ? `En el carrito (${cart[p.id]})` : "Agregar a la reserva"}
+      </button>
+    </div>`;
+  }).join("");
+}
+
+function addToCart(id){
+  cart[id] = (cart[id]||0) + 1;
+  renderGrid(); renderCart(); updateCartCount();
+}
+function changeQty(id, delta){
+  cart[id] = (cart[id]||0) + delta;
+  if(cart[id] <= 0) delete cart[id];
+  renderGrid(); renderCart(); updateCartCount();
+}
+function removeItem(id){
+  delete cart[id];
+  renderGrid(); renderCart(); updateCartCount();
+}
+function updateCartCount(){
+  const count = Object.values(cart).reduce((a,b)=>a+b,0);
+  document.getElementById("cartCount").textContent = count;
+}
+function cartTotals(){
+  let subtotal = 0;
+  Object.entries(cart).forEach(([id, qty])=>{
+    const p = CONFIG.products.find(x=>x.id===id);
+    if(p) subtotal += p.price * qty;
+  });
+  const deposit = Math.round(subtotal * CONFIG.depositPercent/100);
+  return { subtotal, deposit, balance: subtotal - deposit };
+}
+function renderCart(){
+  const body = document.getElementById("drawerBody");
+  const foot = document.getElementById("drawerFoot");
+  const entries = Object.entries(cart);
+
+  if(entries.length === 0){
+    body.innerHTML = `<div class="empty-cart">Todavía no agregaste ningún perfume a tu reserva.</div>`;
+    foot.innerHTML = "";
+    return;
+  }
+
+  body.innerHTML = entries.map(([id, qty])=>{
+    const p = CONFIG.products.find(x=>x.id===id);
+    if(!p) return "";
+    
+    // Thumbnail helper for cart
+    let thumbHtml = '';
+    if(p.image && p.image.trim() !== "") {
+      thumbHtml = `<img src="${p.image}" class="bottle-thumb" alt="${p.name}">`;
+    } else {
+      thumbHtml = `<svg class="bottle-thumb" viewBox="0 0 64 88" style="width:32px; height:44px;"><rect x="24" y="4" width="16" height="12" rx="2" fill="#c9a24b"/><path d="M16 20 H48 V80 Q48 84 32 84 Q16 84 16 80 Z" fill="#c9a24b" opacity="0.3"/></svg>`;
+    }
+
+    return `
+    <div class="cart-item">
+      <div style="width:36px; height:48px; display:flex; align-items:center; justify-content:center;">${thumbHtml}</div>
+      <div class="cart-item-info">
+        <h4>${p.name}</h4>
+        <div class="unit-price">${money(p.price)} · ${p.size}</div>
+        <div class="qty-row">
+          <button class="qty-btn" onclick="changeQty('${id}',-1)">−</button>
+          <span>${qty}</span>
+          <button class="qty-btn" onclick="changeQty('${id}',1)">+</button>
+        </div>
+        <button class="remove-btn" onclick="removeItem('${id}')">Quitar</button>
+      </div>
+      <div class="line-total">${money(p.price*qty)}</div>
+    </div>`;
+  }).join("");
+
+  const { subtotal, deposit, balance } = cartTotals();
+  foot.innerHTML = `
+    <div class="totals-row"><span>Subtotal reserva</span><span>${money(subtotal)}</span></div>
+    <div class="totals-row"><span>Saldo al llegar el pedido</span><span>${money(balance)}</span></div>
+    <div class="totals-row main"><span>Seña a pagar ahora (${CONFIG.depositPercent}%)</span><b>${money(deposit)}</b></div>
+    <button class="wpp-btn" onclick="checkoutWhatsapp()">Reservar por WhatsApp</button>
+    <div class="fine-print">La seña confirma tu cupo dentro del stock limitado de esta preventa. El saldo se coordina al momento de la entrega.</div>
+  `;
+}
+
+function checkoutWhatsapp(){
+  const entries = Object.entries(cart);
+  if(entries.length === 0) return;
+  const { subtotal, deposit, balance } = cartTotals();
+
+  let msg = `Hola! Quiero reservar en la preventa de perfumes de Kairos Import 🖤✨%0A%0A`;
+  entries.forEach(([id, qty])=>{
+    const p = CONFIG.products.find(x=>x.id===id);
+    if(p) msg += `• ${p.name} (${p.size}) x${qty} — ${money(p.price*qty)}%0A`;
+  });
+  msg += `%0ASubtotal: ${money(subtotal)}%0ASeña a pagar (${CONFIG.depositPercent}%25): ${money(deposit)}%0ASaldo restante: ${money(balance)}%0A%0A¿Cómo sigo para pagar la seña?`;
+
+  window.open(`https://wa.me/${CONFIG.whatsappNumber}?text=${msg}`, "_blank");
+}
+
+function openCart(){
+  document.getElementById("drawer").classList.add("show");
+  document.getElementById("overlay").classList.add("show");
+}
+function closeCart(){
+  document.getElementById("drawer").classList.remove("show");
+  document.getElementById("overlay").classList.remove("show");
+}
+
+function showCustomMessage(title, text, isSuccess = true) {
+  const existing = document.getElementById("customAlertModal");
+  if(existing) existing.remove();
+
+  const modal = document.createElement("div");
+  modal.id = "customAlertModal";
+  modal.style.cssText = "position:fixed; inset:0; background:rgba(0,0,0,0.75); display:flex; align-items:center; justify-content:center; z-index:110;";
+  modal.innerHTML = `
+    <div style="background:var(--black-soft); border:1px solid ${isSuccess ? 'var(--gold)' : '#c94b4b'}; width:min(380px, 90vw); border-radius:4px; padding:1.8rem; text-align:center;">
+      <h4 style="font-family:'Cinzel'; color:${isSuccess ? 'var(--gold)' : '#c94b4b'}; font-size:1.2rem; margin-bottom:0.8rem;">${title}</h4>
+      <p style="font-size:0.9rem; color:rgba(243,236,221,0.8); margin-bottom:1.5rem; line-height:1.5;">${text}</p>
+      <button class="btn-gold" style="width:100%; padding:0.7rem;" onclick="document.getElementById('customAlertModal').remove()">Entendido</button>
+    </div>
+  `;
+  document.body.appendChild(modal);
+}
+
+function openAdminModal() {
+  document.getElementById("adminModal").classList.add("show");
+  if(isAdminLoggedIn) {
+    renderAdminDashboard();
+  } else {
+    renderAdminLogin();
+  }
+}
+function closeAdminModal() {
+  document.getElementById("adminModal").classList.remove("show");
+}
+function checkOutsideModal(e) {
+  if(e.target.id === "adminModal") closeAdminModal();
+}
+
+function renderAdminLogin() {
+  document.getElementById("adminModalTitle").textContent = "Acceso Restringido";
+  const body = document.getElementById("adminPanelBody");
+  body.innerHTML = `
+    <form onsubmit="verifyAdminPin(event)">
+      <p style="font-size:0.85rem; color:rgba(243,236,221,0.65); margin-bottom:1.2rem;">Ingrese su PIN de administración para gestionar los productos y ajustes de la preventa.</p>
+      <div class="form-group">
+        <label></label>
+        <input type="password" class="form-control" id="adminPinInput" required placeholder="••••" style="text-align:center; letter-spacing:0.3em; font-size:1.2rem;">
+      </div>
+      <button type="submit" class="btn-gold" style="width:100%; margin-top:0.8rem; padding:0.8rem; text-align:center;">Ingresar al Panel</button>
+    </form>
+  `;
+}
+
+function verifyAdminPin(e) {
+  e.preventDefault();
+  const input = document.getElementById("adminPinInput").value;
+  if(input === CONFIG.adminPin) {
+    isAdminLoggedIn = true;
+    renderAdminDashboard();
+  } else {
+    showCustomMessage("Acceso Denegado", "El PIN ingresado es incorrecto. Intente nuevamente.", false);
+    document.getElementById("adminPinInput").value = "";
+  }
+}
+
+function renderAdminDashboard() {
+  document.getElementById("adminModalTitle").textContent = "Panel de Administración";
+  const body = document.getElementById("adminPanelBody");
+  
+  body.innerHTML = `
+    <div class="admin-actions-bar" style="flex-wrap:wrap; gap:0.6rem;">
+      <span style="font-size:0.85rem; color:rgba(243,236,221,0.7)">Gestiona los productos y carteles de tu preventa</span>
+      <div style="display:flex; gap:0.5rem;">
+        <button class="btn-gold" style="padding: 0.5rem 0.8rem; font-size:0.62rem;" onclick="showProductForm()">+ Nuevo Producto</button>
+        <button class="btn-sm btn-edit" onclick="showSettingsForm()">⚙️ Ajustes</button>
+      </div>
+    </div>
+    <div id="adminProductsList" style="max-height: 55vh; overflow-y: auto;"></div>
+  `;
+  renderAdminProductsList();
+}
+
+function renderAdminProductsList() {
+  const container = document.getElementById("adminProductsList");
+  if(!container) return;
+  container.innerHTML = CONFIG.products.map(p => `
+    <div class="admin-product-item">
+      <div style="display:flex; align-items:center; gap:0.8rem;">
+        <div style="width:36px; height:48px; background:rgba(201,162,75,0.05); border:1px solid var(--line); border-radius:2px; display:flex; align-items:center; justify-content:center; overflow:hidden;">
+          ${renderProductVisual(p)}
+        </div>
+        <div>
+          <strong>${p.name}</strong> (${p.cat})<br>
+          <small style="color:var(--gold);">${money(p.price)} · Stock: ${p.stock}/${p.max}</small>
+          <div style="display:flex; gap:6px; margin-top:2px;">
+            ${p.bestSeller ? '<span style="color:#ff7700; font-size:0.6rem; font-weight:600;">[Más Vendido]</span>' : ''}
+            ${p.lastUnits ? '<span style="color:var(--gold-soft); font-size:0.6rem; font-weight:600;">[Últimas Unidades]</span>' : ''}
+          </div>
+        </div>
+      </div>
+      <div class="admin-product-actions">
+        <button class="btn-sm btn-edit" onclick="editProduct('${p.id}')">Editar</button>
+        <button class="btn-sm btn-del" onclick="deleteProduct('${p.id}')">Eliminar</button>
+      </div>
+    </div>
+  `).join("");
+}
+
+function showSettingsForm() {
+  const body = document.getElementById("adminPanelBody");
+  body.innerHTML = `
+    <form onsubmit="saveSettings(event)">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <h4 style="font-family:'Cinzel'; color:var(--gold);">Ajustes de Tienda</h4>
+        <button type="button" class="btn-sm btn-edit" onclick="renderAdminDashboard()">← Volver</button>
+      </div>
+      
+      <div class="form-group">
+        <label>Número de WhatsApp (con característica y sin +)</label>
+        <input type="text" class="form-control" id="setWpp" required value="${CONFIG.whatsappNumber}">
+      </div>
+
+      <div class="form-group">
+        <label>Porcentaje de Seña (%)</label>
+        <input type="number" class="form-control" id="setDeposit" required min="10" max="100" value="${CONFIG.depositPercent}">
+      </div>
+
+      <div class="form-group">
+        <label>Nuevo PIN de Administrador (Dejar en blanco para mantener actual)</label>
+        <input type="password" class="form-control" id="setNewPin" placeholder="Nuevo PIN numérico">
+      </div>
+
+      <button type="submit" class="btn-gold" style="width:100%; margin-top:1rem; padding:0.8rem; text-align:center;">Guardar Ajustes</button>
+    </form>
+  `;
+}
+
+function saveSettings(e) {
+  e.preventDefault();
+  CONFIG.whatsappNumber = document.getElementById("setWpp").value.trim();
+  CONFIG.depositPercent = Number(document.getElementById("setDeposit").value);
+  const newPin = document.getElementById("setNewPin").value.trim();
+  if(newPin) { CONFIG.adminPin = newPin; }
+  saveConfig();
+  renderFaq();
+  showCustomMessage("¡Guardado!", "Los ajustes se actualizaron correctamente.");
+  renderAdminDashboard();
+}
+
+function showProductForm(product = null) {
+  const isEdit = product !== null;
+  const body = document.getElementById("adminPanelBody");
+  
+  body.innerHTML = `
+    <form onsubmit="saveProductForm(event, '${isEdit ? product.id : ''}')">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <h4 style="font-family:'Cinzel'; color:var(--gold);">${isEdit ? 'Editar Producto' : 'Nuevo Producto'}</h4>
+        <button type="button" class="btn-sm btn-edit" onclick="renderAdminDashboard()">← Volver</button>
+      </div>
+      
+      <div class="form-group">
+        <label>Nombre del Perfume</label>
+        <input type="text" class="form-control" id="pName" required value="${isEdit ? product.name : ''}">
+      </div>
+      
+      <div class="form-group">
+        <label>Línea / Categoría</label>
+        <select class="form-control" id="pCat">
+          <option value="Línea Árabe" ${isEdit && product.cat === 'Línea Árabe' ? 'selected' : ''}>Línea Árabe</option>
+          <option value="Línea Inspirada" ${isEdit && product.cat === 'Línea Inspirada' ? 'selected' : ''}>Línea Inspirada</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label>Notas Olfativas</label>
+        <input type="text" class="form-control" id="pNotes" required placeholder="Ej: Ámbar · Oud · Vainilla" value="${isEdit ? product.notes : ''}">
+      </div>
+
+      <div class="form-group">
+        <label>Imagen del Producto (Subir archivo o pegar URL)</label>
+        <div style="display:flex; gap:0.5rem; margin-bottom:0.5rem;">
+          <input type="file" id="pImageFile" accept="image/*" class="form-control" style="font-size:0.75rem; padding:0.4rem;" onchange="handleImageUpload(event)">
+        </div>
+        <input type="url" class="form-control" id="pImage" placeholder="https://ejemplo.com/imagen.jpg" value="${isEdit && product.image ? product.image : ''}">
+      </div>
+
+      <!-- BADGES TOGGLES INDIVIDUALES -->
+      <div style="background:rgba(201,162,75,0.04); border:1px solid var(--line); padding:1rem; border-radius:2px; margin-bottom:1rem;">
+        <label style="color:var(--gold); margin-bottom:0.6rem; display:block; font-family:'Cinzel'; font-size:0.75rem;">Carteles Destacados Individuales</label>
+        <div style="display:flex; gap:1.5rem; flex-wrap:wrap;">
+          <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.85rem; cursor:pointer;">
+            <input type="checkbox" id="pBestSeller" ${isEdit && product.bestSeller ? 'checked' : ''} style="accent-color:var(--gold);">
+            <span>🔥 Cartel "MÁS VENDIDO"</span>
+          </label>
+          <label style="display:flex; align-items:center; gap:0.5rem; font-size:0.85rem; cursor:pointer;">
+            <input type="checkbox" id="pLastUnits" ${isEdit && product.lastUnits ? 'checked' : ''} style="accent-color:var(--gold);">
+            <span>⚡ Cartel "ÚLTIMAS UNIDADES"</span>
+          </label>
+        </div>
+      </div>
+      
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div class="form-group">
+          <label>Precio ($)</label>
+          <input type="number" class="form-control" id="pPrice" required min="0" value="${isEdit ? product.price : ''}">
+        </div>
+        <div class="form-group">
+          <label>Tamaño / Formato</label>
+          <input type="text" class="form-control" id="pSize" required placeholder="5g o 5ml" value="${isEdit ? product.size : '5g'}">
+        </div>
+      </div>
+      
+      <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div class="form-group">
+          <label>Cupos Disponibles (Stock)</label>
+          <input type="number" class="form-control" id="pStock" required min="0" value="${isEdit ? product.stock : 15}">
+        </div>
+        <div class="form-group">
+          <label>Cupos Totales (Máximo)</label>
+          <input type="number" class="form-control" id="pMax" required min="1" value="${isEdit ? product.max : 20}">
+        </div>
+      </div>
+      
+      <button type="submit" class="btn-gold" style="width:100%; margin-top:1rem; padding:0.8rem; text-align:center;">Guardar Producto</button>
+    </form>
+  `;
+}
+
+function handleImageUpload(e) {
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    document.getElementById("pImage").value = evt.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+function editProduct(id) {
+  const p = CONFIG.products.find(x => x.id === id);
+  if(p) showProductForm(p);
+}
+
+function deleteProduct(id) {
+  const existing = document.getElementById("confirmModal");
+  if(existing) existing.remove();
+
+  const modal = document.createElement("div");
+  modal.id = "confirmModal";
+  modal.style.cssText = "position:fixed; inset:0; background:rgba(0,0,0,0.75); display:flex; align-items:center; justify-content:center; z-index:110;";
+  modal.innerHTML = `
+    <div style="background:var(--black-soft); border:1px solid #c94b4b; width:min(380px, 90vw); border-radius:4px; padding:1.8rem; text-align:center;">
+      <h4 style="font-family:'Cinzel'; color:#c94b4b; font-size:1.2rem; margin-bottom:0.8rem;">¿Eliminar producto?</h4>
+      <p style="font-size:0.9rem; color:rgba(243,236,221,0.8); margin-bottom:1.5rem; line-height:1.5;">Esta acción quitará el perfume de la preventa.</p>
+      <div style="display:flex; gap:0.8rem;">
+        <button class="btn-gold" style="flex:1; padding:0.7rem; background:transparent; border:1px solid var(--line); color:var(--ivory);" onclick="document.getElementById('confirmModal').remove()">Cancelar</button>
+        <button class="btn-gold" style="flex:1; padding:0.7rem; background:#c94b4b; color:#fff;" id="confirmDelBtn">Eliminar</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+
+  document.getElementById("confirmDelBtn").onclick = function() {
+    CONFIG.products = CONFIG.products.filter(x => x.id !== id);
+    saveConfig();
+    renderGrid();
+    renderAdminProductsList();
+    document.getElementById('confirmModal').remove();
+  };
+}
+
+function saveProductForm(e, id) {
+  e.preventDefault();
+  const name = document.getElementById("pName").value.trim();
+  const cat = document.getElementById("pCat").value;
+  const notes = document.getElementById("pNotes").value.trim();
+  const image = document.getElementById("pImage").value.trim();
+  const bestSeller = document.getElementById("pBestSeller").checked;
+  const lastUnits = document.getElementById("pLastUnits").checked;
+  const price = Number(document.getElementById("pPrice").value);
+  const size = document.getElementById("pSize").value.trim();
+  const stock = Number(document.getElementById("pStock").value);
+  const max = Number(document.getElementById("pMax").value);
+
+  if(id) {
+    const p = CONFIG.products.find(x => x.id === id);
+    if(p) {
+      p.name = name;
+      p.cat = cat;
+      p.notes = notes;
+      p.image = image;
+      p.bestSeller = bestSeller;
+      p.lastUnits = lastUnits;
+      p.price = price;
+      p.size = size;
+      p.stock = stock;
+      p.max = max;
+    }
+  } else {
+    const newId = "p_" + Date.now();
+    CONFIG.products.push({ id: newId, name, cat, notes, image, bestSeller, lastUnits, price, size, stock, max });
+  }
+
+  saveConfig();
+  renderGrid();
+  renderAdminDashboard();
+}
+
+// Initial rendering
+renderFaq();
+renderFilters();
+renderGrid();
+renderCart();
+updateCartCount();
+</script>
+
+</body>
+</html>
